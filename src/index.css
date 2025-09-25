@@ -1,0 +1,15 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    /*font-family: "Roboto Mono", monospace;*/
+    font-family: 'Roboto', sans-serif;
+}
+h1 {
+    font-size: 3rem; /* 40px si el tamaño base es 16px */
+}
