@@ -7,32 +7,60 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    const from = '2025-01-01T00:00:00';
-    const to = '2025-12-31T23:59:59';
+  // Usuarios quemados para pruebas locales
+  const mockUsers = [
+    { document: 'admin01', password: '123456', role: 'ADMIN' },
+    { document: 'user123', password: '123456', role: 'USER' }
+  ];
 
+  const handleLogin = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/loans/loan?from=${from}&to=${to}`, {
-        method: 'GET',
+      const response = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
         headers: {
-          'document': document,
-          'password': password
-        }
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ document, password })
       });
 
       if (response.status === 200) {
-        const data = await response.json();
-        const isAdmin = data.length > 0; // lógica temporal
+        const user = await response.json();
+
+        localStorage.setItem("token", user.token);
+        localStorage.setItem("role", user.role);
+        localStorage.setItem("user_document", user.user_document);
+
+        const isAdmin = user.role === 'ADMIN';
         onLogin({ document, password, isAdmin });
+
         navigate(isAdmin ? '/admin' : '/usuario');
+
       } else if (response.status === 401) {
         alert('Credenciales inválidas');
       } else {
         alert('Error inesperado del servidor');
       }
     } catch (error) {
-      console.error('Error de conexión:', error);
-      alert('No se pudo conectar con el servidor');
+      console.warn('Fallo conexión con backend. Usando modo prueba...');
+
+      // Validación local si el backend falla
+      const foundUser = mockUsers.find(
+        (u) => u.document === document && u.password === password
+      );
+
+      if (foundUser) {
+        const fakeToken = 'mocked-token-123';
+        localStorage.setItem("token", fakeToken);
+        localStorage.setItem("role", foundUser.role);
+        localStorage.setItem("user_document", foundUser.document);
+
+        const isAdmin = foundUser.role === 'ADMIN';
+        onLogin({ document, password, isAdmin });
+
+        navigate(isAdmin ? '/admin' : '/usuario');
+      } else {
+        alert('Credenciales inválidas (modo prueba)');
+      }
     }
   };
 

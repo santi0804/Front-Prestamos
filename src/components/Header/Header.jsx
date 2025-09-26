@@ -9,7 +9,7 @@ const Header = () => {
     return (
         <header>
             <nav>
-                <Link to="/" className={location.pathname === "/" ? "active" : ""}> Dashboard</Link>
+                <Link to="/" className={location.pathname === "/" ? "active" : ""}>Tu prestamo</Link>
                 
                 <Link to="/login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
             </nav>
